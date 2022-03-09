@@ -1,6 +1,9 @@
 package com.careerdevs.HelloInternet.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -9,12 +12,25 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/nasa")
 public class NasaController {
 
-    private String myNasaKey = "V4S05eayYgV2lMP6jqyUdSqIip9HqWzyIIQgoV0a";
-    private String nasaApodEndpoint = "https://api.nasa.gov/planetary/apod?api_key=" + myNasaKey;
+    @Autowired
+    private Environment env;
+
+    private String nasaApodEndpoint = "https://api.nasa.gov/planetary/apod?api_key=";
 
     @GetMapping("/apod")
     public Object apodHandler(RestTemplate restTemplate) {
-        return restTemplate.getForObject(nasaApodEndpoint, Object.class);
+        String apiKey = env.getProperty("NASA_API_KEY");
+        return restTemplate.getForObject(nasaApodEndpoint + apiKey, Object.class);
+    }
+
+    @GetMapping("port")
+    public String portTest() {
+        return env.getProperty("server.port");
+    }
+
+    @PostMapping("/info")
+    public String apodInfo() {
+        return "NASA APOD is a daily astro photography photo.";
     }
 
 }
